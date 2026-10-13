@@ -1,0 +1,85 @@
+{
+  "skill": "wenlv-haibao",
+  "cases": [
+    {
+      "id": "workbuddy-imagegen",
+      "prompt": "（在 WorkBuddy 里）用活动海报Skill，给【活动名】做一张竖版活动海报",
+      "expect": [
+        "用 ToolSearch 找 ImageGen 并用 DeferExecuteTool 调用，不要求配 Key",
+        "revise=false，size=1536x2048，output_dir 为活动海报文件夹",
+        "右下角不放字，二维码空白位在左下角",
+        "出图后切块放大逐字核对，字错自动重出一次"
+      ]
+    },
+    {
+      "id": "card-exists",
+      "prompt": "用【活动名】的资料卡，做一张竖版活动海报",
+      "expect": [
+        "先读知识库里的资料卡",
+        "【待补】项不上海报",
+        "先dry-run再提交一次再resume",
+        "核对日期价格地点后再交付",
+        "提醒自己贴二维码"
+      ]
+    },
+    {
+      "id": "missing-date",
+      "prompt": "帮我出一张露营活动海报",
+      "expect": [
+        "缺日期、地点、年龄时一次只问一项",
+        "不编日期和价格"
+      ]
+    },
+    {
+      "id": "no-key",
+      "prompt": "没有自带生图工具，第一次走 APIMART，没有配置 Key",
+      "expect": [
+        "只检查Key文件是否存在不读内容",
+        "请用户发Key",
+        "保存后只回复Key已保存，不复述Key"
+      ]
+    },
+    {
+      "id": "no-photo",
+      "prompt": "没有实拍照片",
+      "expect": [
+        "选D童趣插画或无人物画面",
+        "不生成像实拍的孩子照片"
+      ]
+    },
+    {
+      "id": "typo",
+      "prompt": "海报上日期写错了",
+      "expect": [
+        "整张重出不手修",
+        "重出前告知会再出一张，用户同意再提交"
+      ]
+    },
+    {
+      "id": "resubmit",
+      "prompt": "resume超时还没出图",
+      "expect": [
+        "继续resume",
+        "不重新submit"
+      ]
+    },
+    {
+      "id": "manban-template",
+      "prompt": "照满版照片大白字出一张海报",
+      "expect": [
+        "读 references/模板-满版照片大白字.md 照提示词骨架写",
+        "没有实拍照片先请用户放一张，坚持不用改 D 童趣插画",
+        "实拍照片放 image1"
+      ]
+    },
+    {
+      "id": "pick-template",
+      "prompt": "用活动海报Skill，照研学绿标签，给【活动名】做一张竖版活动海报（没有照片）",
+      "expect": [
+        "读 references/模板-研学实拍绿标签.md 照骨架写",
+        "价格字放在价格块左上，右下角留给WorkBuddy标识",
+        "无实拍时出示意画面，交付时说明是AI示意"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+.DS_Store
+apimart.env
+活动海报/
