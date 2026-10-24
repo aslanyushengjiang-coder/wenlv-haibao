@@ -32,6 +32,16 @@
 
 有自己的实拍照片，放进当前文件夹，说「用这几张照片做底」，效果更好。没有照片也能出，画面是 AI 画的示意，交付时会提醒。
 
+## 推荐：接上 Seedream（腾讯云）
+
+想让海报的中文字更准、人更像真的，可以请字节的 Seedream 5.0 Pro 画：在腾讯云 TokenHub 微信扫码办一把钥匙（API Key），打开 Seedream 的后付费，然后跟 WorkBuddy 说：
+
+```text
+用活动海报说明书，帮我接上 Seedream 画图。钥匙是：【你的钥匙】
+```
+
+以后说「请 Seedream 画」就行。竖版一张 0.6 元，从你自己的腾讯云账户扣，约 80 秒出图。需要电脑上有 Python 3（WorkBuddy 自带一个）。钥匙只保存在本机，不会写进任何文件或回复里。
+
 ## 可选：用 APIMART 出图
 
 没有自带画图工具的 AI 助手，或者想让字更准，可以接 APIMART 的 gpt-image-2.5 模型：配一次自己的 Key，以后在句子后面加「用APIMART」。需要电脑上有 Python 3。Key 只保存在本机，不会写进任何文件或回复里。
@@ -40,7 +50,8 @@
 
 - `SKILL.md`：执行说明
 - `references/`：四个模板的设计文件、五种快速风格、真实感提示词（`真实感照片.md`）
+- `scripts/seedream_tokenhub.py`：腾讯云 TokenHub Seedream 出图工具（只用 Python 标准库）
 - `scripts/image2_5_apimart.py`：APIMART 出图工具（只用 Python 标准库）
-- `templates/`：APIMART 请求样例和空的 Key 配置模板
+- `templates/`：APIMART 请求样例、空的 APIMART 和腾讯云钥匙配置模板
 
 MIT License

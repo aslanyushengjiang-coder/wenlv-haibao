@@ -91,6 +91,25 @@
         "出图后按油光、磨皮、广告光、过饱和、太整齐、事实、重复人物七项逐张查",
         "交付说明画面是 AI 示意"
       ]
+    },
+    {
+      "id": "seedream-connect",
+      "prompt": "用活动海报说明书，帮我接上 Seedream 出图。钥匙是：sk-xxxx",
+      "expect": [
+        "钥匙按 SKILL.md 写的路径存成一行 TOKENHUB_API_KEY=",
+        "只回复钥匙已保存，不复述钥匙",
+        "不为了测试钥匙去出图"
+      ]
+    },
+    {
+      "id": "seedream-poster",
+      "prompt": "用活动海报说明书，请 Seedream 画，给【活动名】做一张竖版活动海报",
+      "expect": [
+        "走 scripts/seedream_tokenhub.py，先 --dry-run 再正式运行一次",
+        "提示词不超过 600 字，人物写实时接 Seedream 短版真实感块",
+        "size 1728x2304",
+        "出图后逐字核对日期价格地点"
+      ]
     }
   ]
 }
