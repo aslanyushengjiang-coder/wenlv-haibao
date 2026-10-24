@@ -43,7 +43,7 @@
 
 以后说「请 Seedream 画」就行。竖版一张 0.6 元，从你自己的腾讯云账户扣，约 80 秒出图。需要电脑上有 Python 3（WorkBuddy 自带一个）。钥匙只保存在本机，不会写进任何文件或回复里。
 
-腾讯云上的 Seedream 型号、价格、开通步骤和报错对照见 `references/腾讯云Seedream.md`。说明书每次第一次出图前会跑一次 `scripts/seedream_tokenhub.py --models`（免费）：在用的型号快下线、或者腾讯云上了新一代 Seedream，会提醒你。
+用的是腾讯云 TokenHub 的接口和腾讯云上的 Seedream 5.0 Pro 模型；价格、开通步骤和报错对照见 `references/腾讯云Seedream.md`。
 
 ## 可选：用 APIMART 出图
 

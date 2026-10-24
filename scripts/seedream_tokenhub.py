@@ -13,11 +13,6 @@
 #   reference_poster：老板自己的参考海报，只能配 "照参考海报" 模板，代替样张当图一。
 # 2. 自由模式：{"prompt": "...", "ref_paths": ["实拍照片.jpg"]}
 # 两种都可加 size：默认竖版 1728x2304，可写 1K / 1.5K / 2K 或 宽x高。
-# 两种都可加 model：默认 seedream-image-v5.0-pro，只能写 seedream-image- 开头的型号。
-#
-# 查腾讯云上的 Seedream 型号（免费，不出图）：python seedream_tokenhub.py --models
-#   会说清在用的型号是不是正常（online）、快下线（pre-offline）、已停（discontinued），
-#   以及有没有比它更新的 Seedream。
 # 图片路径都相对请求.json，参考图最多 10 张。
 #
 # 钥匙：环境变量 TOKENHUB_API_KEY，或文件 ~/.config/shengjiang/wenlv-haibao/tokenhub.env
@@ -37,8 +32,6 @@ import urllib.request
 from pathlib import Path
 
 ENDPOINT = "https://tokenhub.tencentmaas.com/v1/wand/si-image/generation"
-MODELS_ENDPOINT = "https://tokenhub.tencentmaas.com/v1/models"
-STATUS_TEXT = {"online": "正常", "pre-offline": "快下线了", "discontinued": "已经停了"}
 MODEL = "seedream-image-v5.0-pro"
 DEFAULT_SIZE = "1728x2304"
 TIERS = {"1K", "1.5K", "2K"}
@@ -155,7 +148,7 @@ def build_template_prompt(request, base):
 
 def build_body(request_path):
     request = json.loads(request_path.read_text(encoding="utf-8-sig"))
-    unknown = set(request) - {"prompt", "size", "ref_paths", "template", "fields", "people", "photos", "reference_poster", "model"}
+    unknown = set(request) - {"prompt", "size", "ref_paths", "template", "fields", "people", "photos", "reference_poster"}
     if unknown:
         fail(f"请求.json 里有不认识的字段：{sorted(unknown)}")
     if "template" in request:
@@ -172,11 +165,8 @@ def build_body(request_path):
     refs = ref_files
     if len(refs) > MAX_REFS:
         fail(f"参考图最多 {MAX_REFS} 张")
-    model = request.get("model", MODEL)
-    if not model.startswith("seedream-image-"):
-        fail(f"model 只能写 seedream-image- 开头的型号，现在写的是：{model}")
     body = {
-        "model": model,
+        "model": MODEL,
         "prompt": prompt,
         "size": size,
         "response_format": "b64_json",
@@ -207,55 +197,18 @@ def post(body, key):
         fail(f"连不上腾讯云：{err.reason}")
 
 
-def version(model_id):
-    # seedream-image-v5.0-pro -> (5, 0)；认不出版本号的当作 (0,)
-    found = re.search(r"-v(\d+(?:\.\d+)*)", model_id)
-    return tuple(int(x) for x in found.group(1).split(".")) if found else (0,)
-
-
-def check_models(key, in_use):
-    req = urllib.request.Request(MODELS_ENDPOINT, headers={"Authorization": f"Bearer {key}"})
-    try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            items = json.loads(resp.read().decode("utf-8")).get("data", [])
-    except urllib.error.HTTPError as err:
-        fail(f"查模型列表返回 {err.code}：{err.read().decode('utf-8', 'replace')[:300]}")
-    except urllib.error.URLError as err:
-        fail(f"连不上腾讯云：{err.reason}")
-    seedream = sorted((m for m in items if m.get("id", "").startswith("seedream-image-")), key=lambda m: m.get("created", 0))
-    current = next((m for m in seedream if m["id"] == in_use), None)
-    rows = [{"型号": m["id"], "状态": STATUS_TEXT.get(m.get("status"), m.get("status")),
-             "上架": time.strftime("%Y-%m-%d", time.localtime(m.get("created", 0)))} for m in seedream]
-    remind = []
-    if current is None:
-        remind.append(f"在用的 {in_use} 已经不在腾讯云的模型列表里了，要换成别的 Seedream 型号")
-    elif current.get("status") != "online":
-        remind.append(f"在用的 {in_use} {STATUS_TEXT.get(current.get('status'), current.get('status'))}，提前换型号")
-    newer = [m["id"] for m in seedream if m.get("status") == "online" and version(m["id"]) > version(in_use)]
-    if newer:
-        remind.append(f"腾讯云上了比 {in_use} 新一代的 Seedream：{'、'.join(newer)}。先用同一个模板各出一张比一比，用户点头再换（请求.json 里加 model）")
-    return {"在用": in_use, "Seedream 型号": rows, "提醒": remind or ["没有要提醒的，在用型号正常"]}
-
-
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", type=Path)
-    parser.add_argument("--output", type=Path)
+    parser.add_argument("--input", required=True, type=Path)
+    parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--env-file", type=Path, default=DEFAULT_ENV)
     parser.add_argument("--dry-run", action="store_true")
-    parser.add_argument("--models", action="store_true", help="查腾讯云上的 Seedream 型号，免费，不出图")
-    parser.add_argument("--model", default=MODEL, help="配合 --models：要检查的在用型号")
     args = parser.parse_args()
 
-    if args.models:
-        print(json.dumps(check_models(read_key(args.env_file), args.model), ensure_ascii=False, indent=2))
-        return
-    if not (args.input and args.output):
-        fail("出图要写 --input 和 --output；只查型号用 --models")
     body = build_body(args.input.resolve())
     if (args.output / "image-001.png").exists():
         fail(f"{args.output} 里已经有图了，换一个新文件夹，避免重复扣钱")
-    summary = {"model": body["model"], "size": body["size"], "refs": len(body.get("images", [])), "prompt_chars": len(body["prompt"])}
+    summary = {"model": MODEL, "size": body["size"], "refs": len(body.get("images", [])), "prompt_chars": len(body["prompt"])}
 
     if args.dry_run:
         read_key(args.env_file)
