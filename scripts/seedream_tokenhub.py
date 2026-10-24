@@ -29,7 +29,6 @@ MODEL = "seedream-image-v5.0-pro"
 DEFAULT_SIZE = "1728x2304"
 TIERS = {"1K", "1.5K", "2K"}
 MAX_REFS = 10
-MAX_PROMPT_CHARS = 600
 MAX_BODY_BYTES = 20 * 1024 * 1024
 DEFAULT_ENV = Path.home() / ".config" / "shengjiang" / "wenlv-haibao" / "tokenhub.env"
 
@@ -78,8 +77,6 @@ def build_body(request_path):
     prompt = str(request.get("prompt", "")).strip()
     if not prompt:
         fail("请求.json 里没有 prompt")
-    if len(prompt) > MAX_PROMPT_CHARS:
-        fail(f"prompt 有 {len(prompt)} 字，腾讯云上限 {MAX_PROMPT_CHARS} 字，压短再出")
     size = request.get("size", DEFAULT_SIZE)
     check_size(size)
     refs = request.get("ref_paths", [])
