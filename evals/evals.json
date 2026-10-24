@@ -103,7 +103,7 @@
     },
     {
       "id": "seedream-poster",
-      "prompt": "用活动海报说明书，请 Seedream 画，给【活动名】做一张竖版活动海报",
+      "prompt": "用活动海报说明书，请 Seedream 画，给10月26日纸箱烤鸡做一张竖版活动海报",
       "expect": [
         "走 scripts/seedream_tokenhub.py，先 --dry-run 再正式运行一次",
         "提示词不超过 600 字，人物写实时接 Seedream 短版真实感块",
